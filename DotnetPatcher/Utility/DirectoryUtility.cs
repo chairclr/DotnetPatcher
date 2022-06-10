@@ -126,13 +126,5 @@ namespace DotnetPatcher.Utility
 				File.Delete(path);
 			}
 		}
-		public static string CorrectRelativePaths(string pathToCorrect)
-        {
-			if (pathToCorrect.StartsWith(Path.DirectorySeparatorChar))
-			{
-				return Path.Combine(Util.CWD, pathToCorrect);
-			}
-			return pathToCorrect;
-		}
 	}
 }

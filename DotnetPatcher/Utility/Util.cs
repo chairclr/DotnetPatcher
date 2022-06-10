@@ -22,25 +22,8 @@ namespace DotnetPatcher.Utility
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			return false;
 		}
-		public static string CWD => Assembly.GetExecutingAssembly().Location;
+		public static string CWD => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + Path.DirectorySeparatorChar;
 	}
 }
