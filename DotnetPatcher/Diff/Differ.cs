@@ -20,30 +20,30 @@ using System.Text.RegularExpressions;
 
 namespace DotnetPatcher.Diff
 {
-    public class Differ
-    {
+	public class Differ
+	{
 
-        private static string[] DiffableFileExtensions = { ".cs", ".csproj", ".ico", ".resx", ".png", "App.config", ".json", ".targets", ".txt", ".bat", ".sh" };
-        public static bool IsDiffable(string relPath) => DiffableFileExtensions.Any(relPath.EndsWith);
+		private static string[] DiffableFileExtensions = { ".cs", ".csproj", ".ico", ".resx", ".png", "App.config", ".json", ".targets", ".txt", ".bat", ".sh" };
+		public static bool IsDiffable(string relPath) => DiffableFileExtensions.Any(relPath.EndsWith);
 
-        private static readonly string RemovedFileList = "removed_files.list";
-        private static readonly Regex HunkOffsetRegex = new Regex(@"@@ -(\d+),(\d+) \+([_\d]+),(\d+) @@", RegexOptions.Compiled);
+		private static readonly string RemovedFileList = "removed_files.list";
+		private static readonly Regex HunkOffsetRegex = new Regex(@"@@ -(\d+),(\d+) \+([_\d]+),(\d+) @@", RegexOptions.Compiled);
 
 
-        public string SourcePath;
-        public string PatchPath;
-        public string PatchedPath;
+		public string SourcePath;
+		public string PatchPath;
+		public string PatchedPath;
 
-        public Differ(string sourcePath, string patchPath, string patchedPath)
-        {
-            this.SourcePath = sourcePath;
-            this.PatchPath = patchPath;
-            this.PatchedPath = patchedPath;
-        }
+		public Differ(string sourcePath, string patchPath, string patchedPath)
+		{
+			this.SourcePath = sourcePath;
+			this.PatchPath = patchPath;
+			this.PatchedPath = patchedPath;
+		}
 
-        public void Diff()
-        {
-            List<WorkTask> items = new List<WorkTask>();
+		public void Diff()
+		{
+			List<WorkTask> items = new List<WorkTask>();
 
 			foreach ((string file, string relPath) in DirectoryUtility.EnumerateSrcFiles(PatchedPath))
 			{
@@ -61,7 +61,7 @@ namespace DotnetPatcher.Diff
 
 			foreach ((string file, string relPath) in DirectoryUtility.EnumerateFiles(PatchPath))
 			{
-                string targetPath = relPath.EndsWith(".patch") ? relPath.Substring(0, relPath.Length - 6) : relPath;
+				string targetPath = relPath.EndsWith(".patch") ? relPath.Substring(0, relPath.Length - 6) : relPath;
 				if (!File.Exists(Path.Combine(PatchedPath, targetPath)))
 				{
 					DirectoryUtility.DeleteFile(file);
@@ -70,12 +70,12 @@ namespace DotnetPatcher.Diff
 
 			DirectoryUtility.DeleteEmptyDirs(PatchPath);
 
-            string[] removedFiles = DirectoryUtility.EnumerateSrcFiles(SourcePath)
+			string[] removedFiles = DirectoryUtility.EnumerateSrcFiles(SourcePath)
 				.Where(f => !File.Exists(Path.Combine(PatchedPath, f.relPath)))
 				.Select(f => f.relPath)
 				.ToArray();
 
-            string removedFileList = Path.Combine(PatchPath, RemovedFileList);
+			string removedFileList = Path.Combine(PatchPath, RemovedFileList);
 			if (removedFiles.Length > 0)
 			{
 				File.WriteAllLines(removedFileList, removedFiles);
@@ -89,11 +89,11 @@ namespace DotnetPatcher.Diff
 
 		private void DiffFile(string relPath)
 		{
-            PatchFile patchFile = DiffDiffer.DiffFiles(new LineMatchedDiffer(),
+			PatchFile patchFile = DiffDiffer.DiffFiles(new LineMatchedDiffer(),
 				Path.Combine(SourcePath, relPath).Replace('\\', '/'),
 				Path.Combine(PatchedPath, relPath).Replace('\\', '/'));
 
-            string patchPath = Path.Combine(PatchPath, relPath + ".patch");
+			string patchPath = Path.Combine(PatchPath, relPath + ".patch");
 			if (!patchFile.IsEmpty)
 			{
 				DirectoryUtility.CreateParentDirectory(patchPath);

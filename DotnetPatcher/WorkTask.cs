@@ -25,7 +25,7 @@ namespace DotnetPatcher
 		{
 			try
 			{
-                List<string> working = new List<string>();
+				List<string> working = new List<string>();
 				Parallel.ForEach(Partitioner.Create(items, EnumerablePartitionerOptions.NoBuffering),
 					// leave some cores to not use the entire cpu
 					new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount - 2 },
@@ -36,7 +36,7 @@ namespace DotnetPatcher
 			}
 			catch (AggregateException ex)
 			{
-                IEnumerable<Exception> actual = ex.Flatten().InnerExceptions.Where(e => !(e is OperationCanceledException));
+				IEnumerable<Exception> actual = ex.Flatten().InnerExceptions.Where(e => !(e is OperationCanceledException));
 				if (!actual.Any())
 					throw new OperationCanceledException();
 

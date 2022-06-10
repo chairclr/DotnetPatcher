@@ -6,15 +6,15 @@ using ICSharpCode.Decompiler.Metadata;
 
 namespace DotnetPatcher.Utility
 {
-    public class ProjectFileUtility
-    {
+	public class ProjectFileUtility
+	{
 		public static WorkTask WriteProjectFile(PEFile module, string outputType, string projectOutputDirectory, IEnumerable<string> sources, IEnumerable<string> resources, Action<XmlTextWriter> writeSpecificConfig)
 		{
-            string name = AssemblyUtility.GetAssemblyTitle(module);
-            string filename = name + ".csproj";
+			string name = AssemblyUtility.GetAssemblyTitle(module);
+			string filename = name + ".csproj";
 			return new WorkTask(() =>
 			{
-                string path = Path.Combine(projectOutputDirectory, name, filename);
+				string path = Path.Combine(projectOutputDirectory, name, filename);
 				DirectoryUtility.CreateParentDirectory(path);
 
 				using (StreamWriter sw = new StreamWriter(path))
@@ -33,12 +33,12 @@ namespace DotnetPatcher.Utility
 					w.WriteElementString("Nullable", "enable");
 					w.WriteElementString("Version", new AssemblyName(module.FullName).Version.ToString());
 
-                    IDictionary<string, string> attribs = AssemblyUtility.GetCustomAttributes(module);
+					IDictionary<string, string> attribs = AssemblyUtility.GetCustomAttributes(module);
 
 					foreach (KeyValuePair<string, string> attrib in attribs)
 					{
 						switch (attrib.Key)
-                        {
+						{
 							case nameof(AssemblyCompanyAttribute):
 								w.WriteElementString("Company", attrib.Value);
 								break;
@@ -71,7 +71,8 @@ namespace DotnetPatcher.Utility
 		public static WorkTask WriteCommonConfigurationFile(string projectOutputDirectory)
 		{
 			string filename = "Configuration.targets";
-			return new WorkTask(() => {
+			return new WorkTask(() =>
+			{
 				string path = Path.Combine(projectOutputDirectory, filename);
 				DirectoryUtility.CreateParentDirectory(path);
 
@@ -103,7 +104,7 @@ namespace DotnetPatcher.Utility
 		}
 		public static IEnumerable<string> ApplyWildcards(IEnumerable<string> include, IReadOnlyList<string> exclude)
 		{
-            HashSet<string> wildpaths = new HashSet<string>();
+			HashSet<string> wildpaths = new HashSet<string>();
 			foreach (string path in include)
 			{
 				if (wildpaths.Any(path.StartsWith))
@@ -137,12 +138,13 @@ namespace DotnetPatcher.Utility
 		{
 			using Stream s = res.TryOpenStream();
 			s.Position = 0;
-            PEFile module = new PEFile(res.Name, s, PEStreamOptions.PrefetchEntireImage);
+			PEFile module = new PEFile(res.Name, s, PEStreamOptions.PrefetchEntireImage);
 
-            HashSet<string> files = new HashSet<string>();
-            HashSet<string> resources = new HashSet<string>();
+			HashSet<string> files = new HashSet<string>();
+			HashSet<string> resources = new HashSet<string>();
 			DecompilerUtility.DecompileModule(module, resolver, decompiler, items, files, resources, projectOutputDirectory, settings);
-			items.Add(WriteProjectFile(module, "Library", projectOutputDirectory, files, resources, w => {
+			items.Add(WriteProjectFile(module, "Library", projectOutputDirectory, files, resources, w =>
+			{
 				w.WriteStartElement("ItemGroup");
 				foreach (AssemblyReference r in module.AssemblyReferences.OrderBy(r => r.Name))
 				{
@@ -159,7 +161,8 @@ namespace DotnetPatcher.Utility
 
 		public static WorkTask WriteProjectFile(PEFile module, string projectOutputDirectory, IEnumerable<string> sources, IEnumerable<string> resources, ICollection<string>? decompiledLibraries)
 		{
-			return WriteProjectFile(module, "WinExe", projectOutputDirectory, sources, resources, w => {
+			return WriteProjectFile(module, "WinExe", projectOutputDirectory, sources, resources, w =>
+			{
 				//configurations
 				w.WriteStartElement("ItemGroup");
 				foreach (AssemblyReference r in module.AssemblyReferences.OrderBy(r => r.Name))

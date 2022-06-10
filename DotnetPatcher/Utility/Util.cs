@@ -1,8 +1,8 @@
 ﻿using System.Globalization;
 namespace DotnetPatcher.Utility
 {
-    public class Util
-    {
+	public class Util
+	{
 		public static bool IsCultureFile(string path)
 		{
 			if (!path.Contains('-'))

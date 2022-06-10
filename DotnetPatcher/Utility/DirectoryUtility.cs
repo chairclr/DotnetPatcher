@@ -20,8 +20,8 @@ using DotnetPatcher.Utility;
 
 namespace DotnetPatcher.Utility
 {
-    public class DirectoryUtility
-    {
+	public class DirectoryUtility
+	{
 		private static string[] nonSourceDirs = { "bin", "obj", ".vs" };
 		public static IEnumerable<(string file, string relPath)> EnumerateSrcFiles(string dir) =>
 			EnumerateFiles(dir).Where(f => !f.relPath.Split('/', '\\').Any(nonSourceDirs.Contains));
@@ -102,10 +102,10 @@ namespace DotnetPatcher.Utility
 				throw new ArgumentException("Path \"" + path + "\" is not relative to \"" + basePath + "\"");
 
 			return path.Substring(basePath.Length);
-        }
-        public static IEnumerable<(string file, string relPath)> EnumerateFiles(string dir) =>
-           Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories)
-           .Select(path => (file: path, relPath: RelPath(dir, path)));
+		}
+		public static IEnumerable<(string file, string relPath)> EnumerateFiles(string dir) =>
+		   Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories)
+		   .Select(path => (file: path, relPath: RelPath(dir, path)));
 		public static void Copy(string from, string to)
 		{
 			CreateParentDirectory(to);
@@ -116,7 +116,7 @@ namespace DotnetPatcher.Utility
 			}
 
 			File.Copy(from, to, true);
-		
+
 		}
 		public static void DeleteFile(string path)
 		{

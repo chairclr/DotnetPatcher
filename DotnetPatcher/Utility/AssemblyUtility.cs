@@ -19,8 +19,8 @@ using ICSharpCode.Decompiler.TypeSystem;
 
 namespace DotnetPatcher.Utility
 {
-    public class AssemblyUtility
-    {
+	public class AssemblyUtility
+	{
 		private class AttributeTypeProvider : ICustomAttributeTypeProvider<object>
 		{
 			public object GetPrimitiveType(PrimitiveTypeCode typeCode) => null;
@@ -45,18 +45,18 @@ namespace DotnetPatcher.Utility
 		private static string[] knownAttributes = { nameof(AssemblyCompanyAttribute), nameof(AssemblyCopyrightAttribute), nameof(AssemblyTitleAttribute) };
 		public static IDictionary<string, string> GetCustomAttributes(PEFile module)
 		{
-            Dictionary<string, string>? dict = new Dictionary<string, string>();
+			Dictionary<string, string>? dict = new Dictionary<string, string>();
 
-            MetadataReader? reader = module.Reader.GetMetadataReader();
-            IEnumerable<CustomAttribute>? attribs = reader.GetAssemblyDefinition().GetCustomAttributes().Select(reader.GetCustomAttribute);
+			MetadataReader? reader = module.Reader.GetMetadataReader();
+			IEnumerable<CustomAttribute>? attribs = reader.GetAssemblyDefinition().GetCustomAttributes().Select(reader.GetCustomAttribute);
 			foreach (CustomAttribute attrib in attribs)
 			{
-                MemberReference ctor = reader.GetMemberReference((MemberReferenceHandle)attrib.Constructor);
-                string? attrTypeName = reader.GetString(reader.GetTypeReference((TypeReferenceHandle)ctor.Parent).Name);
+				MemberReference ctor = reader.GetMemberReference((MemberReferenceHandle)attrib.Constructor);
+				string? attrTypeName = reader.GetString(reader.GetTypeReference((TypeReferenceHandle)ctor.Parent).Name);
 				if (!knownAttributes.Contains(attrTypeName))
 					continue;
 
-                CustomAttributeValue<object> value = attrib.DecodeValue(new AttributeTypeProvider());
+				CustomAttributeValue<object> value = attrib.DecodeValue(new AttributeTypeProvider());
 				dict[attrTypeName] = (string)value.FixedArguments.Single().Value;
 			}
 

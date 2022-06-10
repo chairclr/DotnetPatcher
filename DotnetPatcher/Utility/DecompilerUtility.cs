@@ -19,32 +19,32 @@ using ICSharpCode.Decompiler.TypeSystem;
 
 namespace DotnetPatcher.Utility
 {
-    public class DecompilerUtility
-    {
-        public class ExtendedProjectDecompiler : WholeProjectDecompiler
-        {
-            public ExtendedProjectDecompiler(IAssemblyResolver assemblyResolver) : base(assemblyResolver)
-            {
-            }
+	public class DecompilerUtility
+	{
+		public class ExtendedProjectDecompiler : WholeProjectDecompiler
+		{
+			public ExtendedProjectDecompiler(IAssemblyResolver assemblyResolver) : base(assemblyResolver)
+			{
+			}
 
-            public new bool IncludeTypeWhenDecompilingProject(PEFile module, TypeDefinitionHandle type) => base.IncludeTypeWhenDecompilingProject(module, type);
-        }
-        public static CSharpDecompiler CreateDecompiler(DecompilerTypeSystem ts, DecompilerSettings settings)
-        {
-            CSharpDecompiler decompiler = new CSharpDecompiler(ts, settings);
-            decompiler.AstTransforms.Add(new EscapeInvalidIdentifiers());
-            decompiler.AstTransforms.Add(new RemoveCLSCompliantAttribute());
-            return decompiler;
-        }
+			public new bool IncludeTypeWhenDecompilingProject(PEFile module, TypeDefinitionHandle type) => base.IncludeTypeWhenDecompilingProject(module, type);
+		}
+		public static CSharpDecompiler CreateDecompiler(DecompilerTypeSystem ts, DecompilerSettings settings)
+		{
+			CSharpDecompiler decompiler = new CSharpDecompiler(ts, settings);
+			decompiler.AstTransforms.Add(new EscapeInvalidIdentifiers());
+			decompiler.AstTransforms.Add(new RemoveCLSCompliantAttribute());
+			return decompiler;
+		}
 
 		public static IEnumerable<IGrouping<string, TypeDefinitionHandle>> GetCodeFiles(PEFile module, ExtendedProjectDecompiler decompiler)
 		{
-            MetadataReader? metadata = module.Metadata;
+			MetadataReader? metadata = module.Metadata;
 			return module.Metadata.GetTopLevelTypeDefinitions().Where(td => decompiler.IncludeTypeWhenDecompilingProject(module, td))
 				.GroupBy(h =>
 				{
-                    TypeDefinition type = metadata.GetTypeDefinition(h);
-                    string path = WholeProjectDecompiler.CleanUpFileName(metadata.GetString(type.Name)) + ".cs";
+					TypeDefinition type = metadata.GetTypeDefinition(h);
+					string path = WholeProjectDecompiler.CleanUpFileName(metadata.GetString(type.Name)) + ".cs";
 					if (!string.IsNullOrEmpty(metadata.GetString(type.Namespace)))
 						path = Path.Combine(WholeProjectDecompiler.CleanUpFileName(metadata.GetString(type.Namespace)), path);
 					return DirectoryUtility.GetOutputPath(path, module);
@@ -83,16 +83,16 @@ namespace DotnetPatcher.Utility
 
 		public static DecompilerTypeSystem DecompileModule(PEFile module, IAssemblyResolver resolver, ExtendedProjectDecompiler decompiler, List<WorkTask> items, ISet<string> sourceSet, ISet<string> resourceSet, string projectOutputDirectory, DecompilerSettings settings, ICollection<string> exclude = null, string conditional = null)
 		{
-            string projectDir = AssemblyUtility.GetAssemblyTitle(module);
-            List<IGrouping<string, TypeDefinitionHandle>> sources = GetCodeFiles(module, decompiler).ToList();
-            List<(string path, Resource r)> resources = ResourceUtility.GetResourceFiles(module).ToList();
+			string projectDir = AssemblyUtility.GetAssemblyTitle(module);
+			List<IGrouping<string, TypeDefinitionHandle>> sources = GetCodeFiles(module, decompiler).ToList();
+			List<(string path, Resource r)> resources = ResourceUtility.GetResourceFiles(module).ToList();
 			if (exclude != null)
 			{
 				sources.RemoveAll(src => exclude.Contains(src.Key));
 				resources.RemoveAll(res => exclude.Contains(res.path));
 			}
 
-            DecompilerTypeSystem ts = new DecompilerTypeSystem(module, resolver, settings);
+			DecompilerTypeSystem ts = new DecompilerTypeSystem(module, resolver, settings);
 			items.AddRange(sources
 				.Where(src => sourceSet.Add(src.Key))
 				.Select(src => DecompileSourceFileAsync(ts, src, projectOutputDirectory, projectDir, settings, conditional)));

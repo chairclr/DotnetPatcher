@@ -20,8 +20,8 @@ using DotnetPatcher.Utility;
 
 namespace DotnetPatcher.Decompile
 {
-    public class Decompiler
-    {
+	public class Decompiler
+	{
 		private readonly DecompilerSettings decompilerSettings = new DecompilerSettings(LanguageVersion.Latest)
 		{
 			CSharpFormattingOptions = FormattingOptionsFactory.CreateKRStyle()
@@ -32,23 +32,23 @@ namespace DotnetPatcher.Decompile
 		public string SourceOutputDirectory;
 
 		public Decompiler(string targetFile, string sourceOutputDirectory)
-        {
+		{
 			this.TargetFile = targetFile;
 			this.SourceOutputDirectory = sourceOutputDirectory;
-        }
+		}
 
-		
+
 		public void DeleteOldSource()
-        {
+		{
 			if (Directory.Exists(SourceOutputDirectory))
 				Directory.Delete(SourceOutputDirectory, true);
 			else
 				Directory.CreateDirectory(SourceOutputDirectory);
 		}
-		
+
 
 		public void Decompile(string[] decompiledLibraries = null)
-        {
+		{
 			if (!File.Exists(TargetFile))
 				throw new FileNotFoundException($"{TargetFile} does not exist");
 
@@ -60,9 +60,9 @@ namespace DotnetPatcher.Decompile
 			projectDecompiler.Settings.CSharpFormattingOptions = FormattingOptionsFactory.CreateKRStyle();
 
 			List<WorkTask> items = new List<WorkTask>();
-            HashSet<string> files = new HashSet<string>();
-            HashSet<string> resources = new HashSet<string>();
-            List<string> exclude = new List<string>();
+			HashSet<string> files = new HashSet<string>();
+			HashSet<string> resources = new HashSet<string>();
+			List<string> exclude = new List<string>();
 
 			if (decompiledLibraries != null)
 			{

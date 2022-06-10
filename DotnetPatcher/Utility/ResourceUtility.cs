@@ -19,8 +19,8 @@ using ICSharpCode.Decompiler.TypeSystem;
 
 namespace DotnetPatcher.Utility
 {
-    public class ResourceUtility
-    {
+	public class ResourceUtility
+	{
 		public static void ExtractResource(string projectOutputDirectory, string name, Resource res, string projectDir)
 		{
 			string path = Path.Combine(projectOutputDirectory, projectDir, name);

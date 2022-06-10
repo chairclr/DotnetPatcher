@@ -24,8 +24,8 @@ using DiffPatcher = CodeChicken.DiffPatch.Patcher;
 
 namespace DotnetPatcher.Patch
 {
-    public class Patcher
-    {
+	public class Patcher
+	{
 		private readonly ConcurrentBag<FilePatcher> results = new ConcurrentBag<FilePatcher>();
 		private static readonly string RemovedFileList = "removed_files.list";
 
@@ -42,22 +42,22 @@ namespace DotnetPatcher.Patch
 		public string PatchedPath;
 
 		public Patcher(string sourcePath, string patchPath, string patchedPath)
-        {
+		{
 			this.SourcePath = sourcePath;
 			this.PatchPath = patchPath;
 			this.PatchedPath = patchedPath;
-        }
+		}
 
 		public void Patch()
-        {
+		{
 
 			mode = DiffPatcher.Mode.FUZZY;
 
 			string removedFileList = Path.Combine(PatchPath, RemovedFileList);
-            HashSet<string> noCopy = File.Exists(removedFileList) ? new HashSet<string>(File.ReadAllLines(removedFileList)) : new HashSet<string>();
+			HashSet<string> noCopy = File.Exists(removedFileList) ? new HashSet<string>(File.ReadAllLines(removedFileList)) : new HashSet<string>();
 
-            List<WorkTask> items = new List<WorkTask>();
-            HashSet<string> newFiles = new HashSet<string>();
+			List<WorkTask> items = new List<WorkTask>();
+			HashSet<string> newFiles = new HashSet<string>();
 
 			foreach ((string file, string relPath) in DirectoryUtility.EnumerateFiles(PatchPath))
 			{
@@ -100,14 +100,14 @@ namespace DotnetPatcher.Patch
 			DirectoryUtility.DeleteEmptyDirs(PatchedPath);
 
 			if (PatchFuzzyCount > 0 || mode == DiffPatcher.Mode.FUZZY && PatchFailureCount > 0)
-            {
+			{
 				Console.WriteLine("fucking L");
-            }
+			}
 		}
 
 		private FilePatcher PatchFile(string patchPath)
 		{
-            FilePatcher patcher = FilePatcher.FromPatchFile(patchPath);
+			FilePatcher patcher = FilePatcher.FromPatchFile(patchPath);
 
 			patcher.Patch(mode);
 			results.Add(patcher);

@@ -53,7 +53,7 @@ namespace DotnetPatcher.Decompile
 			}
 		}
 
-		
+
 
 		public PEFile ResolveModule(PEFile mainModule, string moduleName) => _resolver.ResolveModule(mainModule, moduleName);
 
