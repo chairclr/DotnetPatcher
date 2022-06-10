@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net6.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="CodeChicken.DiffPatch">
+      <HintPath>..\lib\CodeChicken.DiffPatch.dll</HintPath>
+    </Reference>
+    <Reference Include="ICSharpCode.Decompiler">
+      <HintPath>..\lib\ICSharpCode.Decompiler.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
