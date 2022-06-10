@@ -24,7 +24,7 @@ namespace DotnetPatcher.Decompile
 	{
 		private readonly DecompilerSettings decompilerSettings = new DecompilerSettings(LanguageVersion.Latest)
 		{
-			CSharpFormattingOptions = FormattingOptionsFactory.CreateKRStyle()
+			CSharpFormattingOptions = FormattingOptionsFactory.CreateAllman()
 		};
 		private DecompilerUtility.ExtendedProjectDecompiler projectDecompiler;
 
