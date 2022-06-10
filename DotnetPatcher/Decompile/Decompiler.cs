@@ -54,7 +54,7 @@ namespace DotnetPatcher.Decompile
 
 			DeleteOldSource();
 
-			PEFile mainModule = ModuleReader.ReadModule(TargetFile);
+			PEFile mainModule = ModuleReader.ReadModule(TargetFile, true);
 
 			projectDecompiler = new DecompilerUtility.ExtendedProjectDecompiler(new EmbeddedAssemblyResolver(mainModule, mainModule.Reader.DetectTargetFrameworkId(), SourceOutputDirectory));
 			projectDecompiler.Settings.CSharpFormattingOptions = FormattingOptionsFactory.CreateKRStyle();
