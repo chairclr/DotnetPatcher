@@ -9,10 +9,10 @@
 
   <ItemGroup>
     <Reference Include="CodeChicken.DiffPatch">
-      <HintPath>..\lib\CodeChicken.DiffPatch.dll</HintPath>
+      <HintPath>lib\CodeChicken.DiffPatch.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.Decompiler">
-      <HintPath>..\lib\ICSharpCode.Decompiler.dll</HintPath>
+      <HintPath>lib\ICSharpCode.Decompiler.dll</HintPath>
     </Reference>
   </ItemGroup>
 

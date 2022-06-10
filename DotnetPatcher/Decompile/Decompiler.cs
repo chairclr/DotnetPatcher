@@ -33,10 +33,10 @@ namespace DotnetPatcher.Decompile
 
 		public Decompiler(string targetFile, string sourceOutputDirectory)
 		{
-			this.TargetFile = targetFile;
-			this.SourceOutputDirectory = sourceOutputDirectory;
-		}
+			this.TargetFile = DirectoryUtility.CorrectRelativePaths(targetFile);
+			this.SourceOutputDirectory = DirectoryUtility.CorrectRelativePaths(sourceOutputDirectory);
 
+		}
 
 		public void DeleteOldSource()
 		{

@@ -43,9 +43,9 @@ namespace DotnetPatcher.Patch
 
 		public Patcher(string sourcePath, string patchPath, string patchedPath)
 		{
-			this.SourcePath = sourcePath;
-			this.PatchPath = patchPath;
-			this.PatchedPath = patchedPath;
+			this.SourcePath = DirectoryUtility.CorrectRelativePaths(sourcePath);
+			this.PatchPath = DirectoryUtility.CorrectRelativePaths(patchPath);
+			this.PatchedPath = DirectoryUtility.CorrectRelativePaths(patchedPath);
 		}
 
 		public void Patch()

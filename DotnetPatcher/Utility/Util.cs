@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using System.Reflection;
+
 namespace DotnetPatcher.Utility
 {
 	public class Util
@@ -39,5 +41,6 @@ namespace DotnetPatcher.Utility
 
 			return false;
 		}
+		public static string CWD => Assembly.GetExecutingAssembly().Location;
 	}
 }
