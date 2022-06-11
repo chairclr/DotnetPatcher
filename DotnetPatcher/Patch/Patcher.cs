@@ -76,7 +76,7 @@ namespace DotnetPatcher.Patch
 				}
 				else if (relPath != RemovedFileList)
 				{
-					string destination = Path.Combine(PatchedPath, relPath);
+					string destination = Path.GetFullPath(Path.Combine(PatchedPath, relPath));
 
 					patchCopyTasks.Add(new WorkTask(() =>
 					{
@@ -89,7 +89,7 @@ namespace DotnetPatcher.Patch
 			{
 				if (!noCopy.Contains(relPath))
 				{
-					string destination = Path.Combine(PatchedPath, relPath);
+					string destination = Path.GetFullPath(Path.Combine(PatchedPath, relPath));
 
 					copyTasks.Add(new WorkTask(() =>
 					{
@@ -105,7 +105,7 @@ namespace DotnetPatcher.Patch
 
 
 			foreach ((string file, string relPath) in DirectoryUtility.EnumerateSrcFiles(PatchedPath))
-				if (!newFiles.Contains(file))
+				if (!newFiles.Contains(Path.GetFullPath(file)))
 					File.Delete(file);
 
 			DirectoryUtility.DeleteEmptyDirs(PatchedPath);
