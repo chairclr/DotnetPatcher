@@ -56,14 +56,17 @@ namespace DotnetPatcher.Patch
 			string removedFileList = Path.Combine(PatchPath, RemovedFileList);
 			HashSet<string> noCopy = File.Exists(removedFileList) ? new HashSet<string>(File.ReadAllLines(removedFileList)) : new HashSet<string>();
 
-			List<WorkTask> items = new List<WorkTask>();
 			HashSet<string> newFiles = new HashSet<string>();
+
+			List<WorkTask> patchTasks = new List<WorkTask>();
+			List<WorkTask> patchCopyTasks = new List<WorkTask>();
+			List<WorkTask> copyTasks = new List<WorkTask>();
 
 			foreach ((string file, string relPath) in DirectoryUtility.EnumerateFiles(PatchPath))
 			{
 				if (relPath.EndsWith(".patch"))
 				{
-					items.Add(new WorkTask(() =>
+					patchTasks.Add(new WorkTask(() =>
 					{
 						string patchedPathReal = Path.GetFullPath(DirectoryUtility.PreparePath(PatchFile(file).PatchedPath));
 
@@ -75,23 +78,31 @@ namespace DotnetPatcher.Patch
 				{
 					string destination = Path.Combine(PatchedPath, relPath);
 
-					items.Add(new WorkTask(() => DirectoryUtility.Copy(file, destination)));
+					patchCopyTasks.Add(new WorkTask(() =>
+					{
+						DirectoryUtility.Copy(file, destination);
+					}));
 					newFiles.Add(destination);
 				}
 			}
-
 			foreach ((string file, string relPath) in DirectoryUtility.EnumerateSrcFiles(SourcePath))
 			{
 				if (!noCopy.Contains(relPath))
 				{
 					string destination = Path.Combine(PatchedPath, relPath);
 
-					items.Add(new WorkTask(() => DirectoryUtility.Copy(file, destination)));
+					copyTasks.Add(new WorkTask(() =>
+					{
+						DirectoryUtility.Copy(file, destination);
+					}));
 					newFiles.Add(destination);
 				}
 			}
 
-			WorkTask.ExecuteParallel(items);
+			WorkTask.ExecuteParallel(patchTasks);
+			WorkTask.ExecuteParallel(patchCopyTasks);
+			WorkTask.ExecuteParallel(copyTasks);
+
 
 			foreach ((string file, string relPath) in DirectoryUtility.EnumerateSrcFiles(PatchedPath))
 				if (!newFiles.Contains(file))
@@ -101,7 +112,7 @@ namespace DotnetPatcher.Patch
 
 			if (PatchFuzzyCount > 0 || mode == DiffPatcher.Mode.FUZZY && PatchFailureCount > 0)
 			{
-				Console.WriteLine("fucking L");
+				Console.WriteLine("Some errors occured, this is so sad.");
 			}
 		}
 
