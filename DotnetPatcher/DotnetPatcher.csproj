@@ -8,9 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Reference Include="CodeChicken.DiffPatch">
-      <HintPath>lib\CodeChicken.DiffPatch.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\DiffPatch\DiffPatch.csproj" />
     <Reference Include="ICSharpCode.Decompiler">
       <HintPath>lib\ICSharpCode.Decompiler.dll</HintPath>
     </Reference>
