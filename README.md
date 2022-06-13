@@ -11,7 +11,6 @@ Dotnet Patcher is a Dotnet decompiling, patching, and diffing tool.
 Examples
 </h2>
 
----
 
 <h3>
 Decompiling & Patching
@@ -44,7 +43,6 @@ patchDiffer.Diff();
 Main features
 </h2>
 
----
 
 - Quickly decompile .NET executables into source code
 - Patch code using fuzzy patches, exact patches, and offset patches
@@ -54,7 +52,6 @@ Main features
 Planned features
 </h2>
 
----
 
 - Both synchronous and asynchronous decompilation, patching, and diffing
 
@@ -62,7 +59,6 @@ Planned features
 Contributing
 </h2>
 
----
 
 To contribute, open a pull request and I will review it and accept the PR if it suitable.
 
@@ -70,6 +66,5 @@ To contribute, open a pull request and I will review it and accept the PR if it 
 Questions?
 </h2>
 
----
 
 Open an issue!
