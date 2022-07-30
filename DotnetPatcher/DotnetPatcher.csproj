@@ -8,10 +8,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ICSharpCode.Decompiler" Version="7.2.1.6856" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\DiffPatch\DiffPatch.csproj" />
-    <Reference Include="ICSharpCode.Decompiler">
-      <HintPath>lib\ICSharpCode.Decompiler.dll</HintPath>
-    </Reference>
   </ItemGroup>
 
 </Project>
