@@ -46,7 +46,7 @@ namespace DotnetPatcher.Utility
 					TypeDefinition type = metadata.GetTypeDefinition(h);
 					string path = WholeProjectDecompiler.CleanUpFileName(metadata.GetString(type.Name)) + ".cs";
 					if (!string.IsNullOrEmpty(metadata.GetString(type.Namespace)))
-						path = Path.Combine(WholeProjectDecompiler.CleanUpFileName(metadata.GetString(type.Namespace)), path);
+						path = Path.Combine(WholeProjectDecompiler.CleanUpPath(metadata.GetString(type.Namespace)), path);
 					return DirectoryUtility.GetOutputPath(path, module);
 				}, StringComparer.OrdinalIgnoreCase);
 		}
