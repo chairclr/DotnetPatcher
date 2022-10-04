@@ -41,7 +41,16 @@ namespace DotnetPatcher.Decompile
 		public void DeleteOldSource()
 		{
 			if (Directory.Exists(SourceOutputDirectory))
-				Directory.Delete(SourceOutputDirectory, true);
+            {
+                foreach (string dir in Directory.GetDirectories(SourceOutputDirectory))
+                {
+                    if (!dir.EndsWith(".git")) Directory.Delete(dir, true);
+                }
+                foreach (string file in Directory.GetFiles(SourceOutputDirectory))
+                {
+                    File.Delete(file);
+                }
+            }
 			else
 				Directory.CreateDirectory(SourceOutputDirectory);
 		}
