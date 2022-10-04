@@ -21,15 +21,16 @@ using CodeChicken.DiffPatch;
 using System.Collections.Concurrent;
 
 using DiffPatcher = CodeChicken.DiffPatch.Patcher;
+using static CodeChicken.DiffPatch.Patcher;
 
 namespace DotnetPatcher.Patch
 {
 	public class Patcher
 	{
-		private readonly ConcurrentBag<FilePatcher> results = new ConcurrentBag<FilePatcher>();
+		private readonly ConcurrentBag<FilePatcher?> results = new ConcurrentBag<FilePatcher?>();
 		private static readonly string RemovedFileList = "removed_files.list";
 
-		public DiffPatcher.Mode mode;
+		public DiffPatcher.Mode PatcherMode;
 
 		public int PatchFailureCount = 0;
 		public int PatchWarningCount = 0;
@@ -50,8 +51,7 @@ namespace DotnetPatcher.Patch
 
 		public void Patch()
 		{
-
-			mode = DiffPatcher.Mode.FUZZY;
+			PatcherMode = DiffPatcher.Mode.FUZZY;
 
 			string removedFileList = Path.Combine(PatchPath, RemovedFileList);
 			HashSet<string> noCopy = File.Exists(removedFileList) ? new HashSet<string>(File.ReadAllLines(removedFileList)) : new HashSet<string>();
@@ -66,11 +66,16 @@ namespace DotnetPatcher.Patch
 			{
 				if (relPath.EndsWith(".patch"))
 				{
-					patchTasks.Add(new WorkTask(() =>
-					{
-						string patchedPathReal = Path.GetFullPath(DirectoryUtility.PreparePath(PatchFile(file).PatchedPath));
+                    patchTasks.Add(new WorkTask(() =>
+                    {
+                        FilePatcher? filePatcher = PatchFile(file);
 
-						newFiles.Add(patchedPathReal);
+                        if (filePatcher is not null)
+                        {
+                            string patchedPathReal = Path.GetFullPath(DirectoryUtility.PreparePath(filePatcher.PatchedPath));
+
+                            newFiles.Add(patchedPathReal);
+                        }
 					}));
 					noCopy.Add(relPath.Substring(0, relPath.Length - 6));
 				}
@@ -110,36 +115,107 @@ namespace DotnetPatcher.Patch
 
 			DirectoryUtility.DeleteEmptyDirs(PatchedPath);
 
-			if (PatchFuzzyCount > 0 || mode == DiffPatcher.Mode.FUZZY && PatchFailureCount > 0)
+			if (PatchFailureCount > 0)
 			{
-				Console.WriteLine("Some errors occured, this is so sad.");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Errors occured during patching process");
+                Console.ResetColor();
 			}
-		}
 
-		private FilePatcher PatchFile(string patchPath)
+            Console.Write("Patching Stats: ");
+
+            if (PatchFailureCount > 0) Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($"{PatchFailureCount} Errors ");
+            Console.ResetColor();
+
+            if (PatchWarningCount > 0) Console.ForegroundColor = ConsoleColor.Red;
+            Console.Write($"{PatchWarningCount} Warnings ");
+            Console.ResetColor();
+
+            if (PatchFuzzyCount > 0) Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write($"{PatchFuzzyCount} Fuzzy Patches\n");
+            Console.ResetColor();
+
+            foreach (FilePatcher? patcher in results)
+            {
+                if (patcher is null)
+                    continue;
+                if (patcher.results is null)
+                    continue;
+                foreach (Result result in patcher.results)
+                {
+                    if (PatchFailureCount > 0)
+                    {
+                        if (!result.success)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Red;
+                            Console.WriteLine($"Failed Patch at {patcher.patchFilePath}");
+                            Console.WriteLine(result.patch.ToString());
+                            Console.ResetColor();
+                        }
+                    }
+
+                    if (PatchFuzzyCount > 0)
+                    {
+                        if (result.mode == Mode.FUZZY)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Blue;
+                            Console.WriteLine($"Patch ({patcher.patchFilePath}) fuzzy patched with quality of {(result.fuzzyQuality * 100):F2}%");
+                            Console.ResetColor();
+                        }
+                    }
+
+                    if (PatchWarningCount > 0)
+                    {
+                        if (result.offsetWarning)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Yellow;
+                            Console.WriteLine($"Warned Patch at {patcher.patchFilePath}");
+                            Console.WriteLine(result.patch.ToString());
+                            Console.ResetColor();
+                        }
+                    }
+                }
+            }
+        }
+
+		private FilePatcher? PatchFile(string patchPath)
 		{
-			FilePatcher patcher = FilePatcher.FromPatchFile(patchPath);
+            FilePatcher? patcher = null;
+            try
+            {
+                patcher = FilePatcher.FromPatchFile(patchPath);
+                results.Add(patcher);
 
-			patcher.Patch(mode);
-			results.Add(patcher);
-			DirectoryUtility.CreateParentDirectory(patcher.PatchedPath);
-			patcher.Save();
+                patcher.Patch(PatcherMode);
+                DirectoryUtility.CreateParentDirectory(patcher.PatchedPath);
+                patcher.Save();
 
-			foreach (DiffPatcher.Result result in patcher.results)
-			{
-				if (!result.success)
-				{
-					PatchFailureCount++;
-					continue;
-				}
+                foreach (Result result in patcher.results)
+                {
+                    if (!result.success)
+                    {
+                        PatchFailureCount++;
+                        continue;
+                    }
 
-				if (result.mode == DiffPatcher.Mode.FUZZY || result.offsetWarning) PatchWarningCount++;
-				if (result.mode == DiffPatcher.Mode.EXACT) PatchExactCount++;
-				else if (result.mode == DiffPatcher.Mode.OFFSET) PatchOffsetCount++;
-				else if (result.mode == DiffPatcher.Mode.FUZZY) PatchFuzzyCount++;
-			}
+                    if (result.offsetWarning) PatchWarningCount++;
+                    if (result.mode == Mode.EXACT) PatchExactCount++;
+                    else if (result.mode == Mode.OFFSET) PatchOffsetCount++;
+                    else if (result.mode == Mode.FUZZY) PatchFuzzyCount++;
+                }
 
-			return patcher;
+               return patcher;
+            }
+             catch (Exception e)
+            {
+                PatchFailureCount++;
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Exception occured when patching with {patcher?.patchFilePath ?? "Uknown file (\"FilePatcher? patcher\" was null)"}");
+                Console.WriteLine(e.ToString());
+                Console.ResetColor();
+                return patcher;
+            }
 		}
 	}
 }
