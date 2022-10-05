@@ -70,8 +70,9 @@ namespace DotnetPatcher.Diff
 
 			DirectoryUtility.DeleteEmptyDirs(PatchPath);
 
-			string[] removedFiles = DirectoryUtility.EnumerateSrcFiles(SourcePath)
-				.Where(f => !File.Exists(Path.Combine(PatchedPath, f.relPath)))
+			string[] removedFiles = 
+                DirectoryUtility.EnumerateSrcFiles(SourcePath)
+				.Where(f => !f.relPath.StartsWith(".git" + Path.DirectorySeparatorChar) && !File.Exists(Path.Combine(PatchedPath, f.relPath)))
 				.Select(f => f.relPath)
 				.ToArray();
 
