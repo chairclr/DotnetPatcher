@@ -86,7 +86,7 @@ namespace DotnetPatcher.Patch
 					patchCopyTasks.Add(new WorkTask(() =>
 					{
 						DirectoryUtility.Copy(file, destination);
-					}));
+                    }));
 					newFiles.Add(destination);
 				}
 			}
@@ -96,7 +96,9 @@ namespace DotnetPatcher.Patch
 				{
 					string destination = Path.GetFullPath(Path.Combine(PatchedPath, relPath));
 
-					copyTasks.Add(new WorkTask(() =>
+                    if (destination.Contains(".git")) continue;
+
+                    copyTasks.Add(new WorkTask(() =>
 					{
 						DirectoryUtility.Copy(file, destination);
 					}));
