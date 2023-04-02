@@ -28,7 +28,7 @@ namespace DotnetPatcher
 				List<string> working = new List<string>();
 				Parallel.ForEach(Partitioner.Create(items, EnumerablePartitionerOptions.NoBuffering),
 					// leave some cores to not use the entire cpu
-					new ParallelOptions { MaxDegreeOfParallelism = Environment.ProcessorCount - 2 },
+					new ParallelOptions { MaxDegreeOfParallelism = Math.Min(Environment.ProcessorCount - 1, 1) },
 					item =>
 					{
 						item.task();
